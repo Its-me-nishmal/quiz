@@ -8,6 +8,7 @@ const UserSchema = new mongoose.Schema({
   scores: [{ category: String, score: Number }],
   badges: [String],
   apiKey: { type: String, unique: true },
+  isAdmin: { type: Boolean, default: false }
 });
 
 module.exports = mongoose.model('User', UserSchema);
