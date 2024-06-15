@@ -24,20 +24,37 @@ exports.getQuizByCategory = async (req, res) => {
 
 exports.submitQuiz = async (req, res) => {
   const { userId, category, level, answers } = req.body;
+
   try {
     const quiz = await Quiz.findOne({ category, level });
     if (!quiz) {
       return res.status(404).json({ msg: 'Quiz not found' });
     }
 
-    const score = answers.reduce((total, answer, index) => {
-      return total + (answer === quiz.questions[index].answer ? 1 : 0);
-    }, 0);
-
-    // Assuming User model is already imported
     const user = await User.findById(userId);
+    let score = 0;
+
+    answers.forEach(answerObj => {
+      const question = quiz.questions.find(
+        q => q.questionId.toString() === answerObj.questionId
+      );
+
+      const alreadyAnswered = user.answeredQuestions.some(
+        q => q.questionId.toString() === answerObj.questionId
+      );
+
+      if (question && !alreadyAnswered && answerObj.answer === question.answer) {
+        score++;
+        user.answeredQuestions.push({
+          questionId: question.questionId,
+          category,
+          level
+        });
+      }
+    });
+
     const existingScore = user.scores.find(
-      (score) => score.category === category && score.level === level
+      score => score.category === category && score.level === level
     );
 
     if (existingScore) {
