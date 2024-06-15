@@ -52,3 +52,22 @@ exports.submitQuiz = async (req, res) => {
     res.status(500).send('Server error');
   }
 };
+
+exports.addQuiz = async (req, res) => {
+  const { category, level, questions } = req.body;
+
+  try {
+    // Create new quiz
+    const newQuiz = new Quiz({
+      category,
+      level,
+      questions,
+    });
+
+    await newQuiz.save();
+    res.json(newQuiz);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server error');
+  }
+};
