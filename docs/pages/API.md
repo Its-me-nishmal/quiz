@@ -8,7 +8,8 @@
 - **Body**:
     ```json
     {
-      "username": "testuser",
+      "name": "Test User",
+      "username": "uniqueness",
       "email": "testuser@example.com",
       "password": "password"
     }

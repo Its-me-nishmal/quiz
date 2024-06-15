@@ -6,14 +6,14 @@ const generateApiKey = require('../services/apiKeyGenerator');
 const keys = require('../config/keys');
 
 exports.registerUser = async (req, res) => {
-  const { username, email, password } = req.body;
+  const { name, username, email, password } = req.body;
   try {
     let user = await User.findOne({ email });
     if (user) {
       return res.status(400).json({ msg: 'User already exists' });
     }
 
-    user = new User({ username, email, password, apiKey: generateApiKey() });
+    user = new User({ name, username, email, password, apiKey: generateApiKey() });
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(password, salt);
     await user.save();
