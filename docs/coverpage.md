@@ -7,5 +7,5 @@
 - User and Developer guides
 - Clear architecture overview
 
-[Get Started](#README)
+[Get Started](README)
 [GitHub](https://github.com/Its-me-nishmal/quiz)
