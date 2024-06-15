@@ -1,7 +1,7 @@
 <!-- docs/_sidebar.md -->
 
 -   [Home](/)
--   [API](pages/api.md)
+-   [API](pages/API.md)
     -   [Docker](pages/docker.md)
 -   [Usage](pages/usage.md)
 -   [Configuration](pages/gpt.md)
