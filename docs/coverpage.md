@@ -1,13 +1,11 @@
-# docsify-themeable
+# fully functional quiz api
 
-> A delightfully simple theme system for [docsify.js](https://docsify.js.org)
+> A comprehensive guide to using and developing the Quiz App.
 
-- Customize using CSS custom properties
-- Zero packages to install or build
-- Improved desktop and mobile experience
-- Multiple themes available
-- Legacy browser support (IE11+)
+- Easy setup and installation
+- Detailed API documentation
+- User and Developer guides
+- Clear architecture overview
 
-[Get Started](README)
-[Demo Sandbox](https://codesandbox.io/s/xv36w4695o)
-[GitHub](https://github.com/jhildenbiddle/docsify-themeable)
+[Get Started](#README)
+[GitHub](https://github.com/Its-me-nishmal/quiz)
