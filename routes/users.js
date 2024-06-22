@@ -19,4 +19,5 @@ router.get('/google/callback', passport.authenticate('google', { failureRedirect
 // Forgot password
 router.post('/forgot-password', userController.forgotPassword);
 
+router.get('/getUser', auth, userController.getUserProfile);
 module.exports = router;

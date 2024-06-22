@@ -8,7 +8,7 @@ const AnsweredQuestionSchema = new mongoose.Schema({
 
 const UserSchema = new mongoose.Schema({
   name: { type: String },
-  username: { type: String, required: true, unique: true },
+  username: { type: String, sparse: true, unique: true },
   email: { type: String, required: true, unique: true },
   password: { type: String },
   googleId: { type: String },

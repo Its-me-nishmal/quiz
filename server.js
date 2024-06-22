@@ -5,12 +5,12 @@ const cors = require('cors');
 const passport = require('passport');
 require('dotenv').config();
 const getIP = require('./utility/getIP');
-
-const connectDB = require('./config/db');
 const keys = require('./config/keys');
+const connectDB = require('./config/db');
+connectDB(keys.mongoURI);
 
 // Connect to database
-connectDB(keys.mongoURI);
+
 
 const app = express();
 
