@@ -10,6 +10,7 @@ const transporter = nodemailer.createTransport({
 });
 
 const sendPasswordResetEmail = (email, resetLink) => {
+  console.log('debugging...')
   const mailOptions = {
     from: keys.emailUser,
     to: email,

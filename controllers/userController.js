@@ -101,7 +101,9 @@ exports.forgotPassword = [
       const token = jwt.sign(payload, keys.jwtSecret, { expiresIn: '1h' });
 
       const resetLink = `http://localhost:3000/reset-password?token=${token}`;
+      console.log("resetLink: ", resetLink);
       sendPasswordResetEmail(email, resetLink);
+      console.log("token: ", token);
 
       res.json({ msg: 'Password reset email sent' });
     } catch (err) {
