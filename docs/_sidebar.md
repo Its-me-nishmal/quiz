@@ -2,7 +2,7 @@
 
 -   [Home](/)
 -   [API](pages/API.md)
-    -   [Docker](pages/docker.md)
+-   [QUIZ](pages/QUIZ.md)
 -   [Usage](pages/usage.md)
 -   [Configuration](pages/gpt.md)
     -   [GPT configuration](pages/gpt.md)
