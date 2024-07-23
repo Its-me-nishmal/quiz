@@ -16,7 +16,8 @@ const UserSchema = new mongoose.Schema({
   badges: [String],
   apiKey: { type: String, unique: true },
   isAdmin: { type: Boolean, default: false },
-  answeredQuestions: [AnsweredQuestionSchema]
+  answeredQuestions: [AnsweredQuestionSchema],
+  totalScore: { type: Number, default: 0 }
 });
 
 module.exports = mongoose.model('User', UserSchema);

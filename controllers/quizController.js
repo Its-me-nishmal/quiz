@@ -1,91 +1,73 @@
 const Quiz = require('../models/Quiz');
-const User = require('../models/User')
 
 exports.getAllQuizzes = async (req, res) => {
   try {
     const quizzes = await Quiz.find();
     res.json(quizzes);
   } catch (err) {
-    console.error(err.message);
     res.status(500).send('Server error');
   }
 };
 
 exports.getQuizByCategory = async (req, res) => {
-  const { category, level } = req.params;
   try {
-    const quizzes = await Quiz.find({ category, level });
+    const quizzes = await Quiz.find({ category: req.params.category, level: req.params.level });
     res.json(quizzes);
   } catch (err) {
-    console.error(err.message);
     res.status(500).send('Server error');
   }
 };
 
 exports.submitQuiz = async (req, res) => {
-  const { userId, category, level, answers } = req.body;
+  const { answers } = req.body;
+  const user = req.user;
 
   try {
-    const quiz = await Quiz.findOne({ category, level });
-    if (!quiz) {
-      return res.status(404).json({ msg: 'Quiz not found' });
+    const quizzes = await Quiz.find({ "questions._id": { $in: answers.map(a => a.id) } });
+    if (!quizzes.length) {
+      return res.status(404).json({ msg: 'Quizzes not found' });
     }
 
-    const user = await User.findById(userId);
     let score = 0;
+    const answeredQuestionIds = new Set();
 
-    answers.forEach(answerObj => {
-      const question = quiz.questions.find(
-        q => q.questionId.toString() === answerObj.questionId
-      );
-
-      const alreadyAnswered = user.answeredQuestions.some(
-        q => q.questionId.toString() === answerObj.questionId
-      );
-
-      if (question && !alreadyAnswered && answerObj.answer === question.answer) {
-        score++;
-        user.answeredQuestions.push({
-          questionId: question.questionId,
-          category,
-          level
-        });
+    answers.forEach(answerId => {
+      if (answeredQuestionIds.has(answerId)) {
+        return; // Skip if the question has already been answered
       }
+      answeredQuestionIds.add(answerId);
+
+      quizzes.forEach(quiz => {
+        const question = quiz.questions.find(q => q._id.toString() === answerId);
+        if (question) {
+          score++;
+          const existingScore = user.scores.find(
+            s => s.category === quiz.category && s.level === quiz.level
+          );
+          if (existingScore) {
+            existingScore.score = Math.max(existingScore.score, score);
+          } else {
+            user.scores.push({ category: quiz.category, level: quiz.level, score });
+          }
+        }
+      });
     });
 
-    const existingScore = user.scores.find(
-      score => score.category === category && score.level === level
-    );
-
-    if (existingScore) {
-      existingScore.score = Math.max(existingScore.score, score);
-    } else {
-      user.scores.push({ category, level, score });
-    }
+    user.totalScore = (user.totalScore || 0) + score;
 
     await user.save();
     res.json({ score });
   } catch (err) {
-    console.error(err.message);
     res.status(500).send('Server error');
   }
 };
 
 exports.addQuiz = async (req, res) => {
-  const { category, level, questions } = req.body;
-
   try {
-    // Create new quiz
-    const newQuiz = new Quiz({
-      category,
-      level,
-      questions,
-    });
-
+    const newQuiz = new Quiz(req.body);
     await newQuiz.save();
     res.json(newQuiz);
   } catch (err) {
-    console.error(err.message);
     res.status(500).send('Server error');
   }
 };

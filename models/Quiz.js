@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 
 const QuestionSchema = new mongoose.Schema({
-  questionId: { type: mongoose.Schema.Types.ObjectId, auto: true },
   question: { type: String, required: true },
   options: { type: [String], required: true },
   answer: { type: String, required: true },
