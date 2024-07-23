@@ -25,12 +25,13 @@ exports.getOverallLeaderboard = async (req, res) => {
     const leaderboard = users
       .map(user => ({
         username: user.username,
-        score: user.scores.reduce((total, score) => total + score.score, 0),
+        totalScore: user.totalScore, // Use totalScore directly
       }))
-      .sort((a, b) => b.score - a.score);
+      .sort((a, b) => b.totalScore - a.totalScore); // Sort by totalScore
     res.json(leaderboard);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server error');
   }
 };
+
