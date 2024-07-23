@@ -18,7 +18,6 @@ exports.getQuizByCategory = async (req, res) => {
   }
 };
 
-
 exports.submitQuiz = async (req, res) => {
   const { answers } = req.body; // Extract answers from the request body
   const user = req.user; // Get the user from the request
@@ -38,27 +37,34 @@ exports.submitQuiz = async (req, res) => {
 
     // Iterate through each answer
     answers.forEach(answer => {
-      if (answeredQuestionIds.has(answer.id)) {
-        return; // Skip if the question has already been answered
+      // Find the quiz and question associated with this answer
+      const quiz = quizzes.find(quiz => quiz.questions.some(q => q.options.some(o => o._id.toString() === answer.id)));
+      if (!quiz) {
+        return; // Skip if the quiz or question is not found
       }
 
-      quizzes.forEach(quiz => {
-        const question = quiz.questions.find(q => q.options.some(o => o._id.toString() === answer.id));
-        if (question && question.answerId.toString() === answer.id) {
-          totalScore++; // Increment total score for correct answer
-          
-          const key = `${quiz.category}-${quiz.level}`;
-          const currentScore = scoreMap.get(key) || 0;
-          scoreMap.set(key, currentScore + 1); // Update the score for the category and level
+      const question = quiz.questions.find(q => q.options.some(o => o._id.toString() === answer.id));
+      if (!question || answeredQuestionIds.has(question._id.toString())) {
+        return; // Skip if the question is not found or has already been answered
+      }
 
-          answeredQuestionIds.add(answer.id); // Add the question ID to the set
-          user.answeredQuestions.push({
-            questionId: question._id,
-            category: quiz.category,
-            level: quiz.level
-          });
-        }
-      });
+      // Check if the answer is correct
+      const isCorrect = question.answerId.toString() === answer.id;
+      if (isCorrect) {
+        totalScore++; // Increment total score for correct answer
+        
+        const key = `${quiz.category}-${quiz.level}`;
+        const currentScore = scoreMap.get(key) || 0;
+        scoreMap.set(key, currentScore + 1); // Update the score for the category and level
+
+        // Add the question ID to the set and user object
+        answeredQuestionIds.add(question._id.toString());
+        user.answeredQuestions.push({
+          questionId: question._id,
+          category: quiz.category,
+          level: quiz.level
+        });
+      }
     });
 
     // Update user's scores based on the scoreMap
@@ -81,7 +87,6 @@ exports.submitQuiz = async (req, res) => {
     res.status(500).send('Server error'); // Handle server error
   }
 };
-
 
 
 
