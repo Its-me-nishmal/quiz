@@ -31,7 +31,6 @@ exports.submitQuiz = async (req, res) => {
 
     let totalScore = 0;
     const answeredQuestionIds = new Set(user.answeredQuestions.map(aq => aq.questionId.toString()));
-    const newAnsweredQuestions = [];
 
     // Create a map to store the highest scores for each category and level
     const scoreMap = new Map();
@@ -51,7 +50,8 @@ exports.submitQuiz = async (req, res) => {
           const currentScore = scoreMap.get(key) || 0;
           scoreMap.set(key, currentScore + 1);
 
-          newAnsweredQuestions.push({
+          answeredQuestionIds.add(answer.id); // Add the question ID to the set
+          user.answeredQuestions.push({
             questionId: question._id,
             category: quiz.category,
             level: quiz.level
@@ -72,7 +72,6 @@ exports.submitQuiz = async (req, res) => {
     });
 
     user.totalScore = (user.totalScore || 0) + totalScore;
-    user.answeredQuestions.push(...newAnsweredQuestions);
 
     await user.save();
     res.json({ score: totalScore });
