@@ -18,9 +18,10 @@ exports.getQuizByCategory = async (req, res) => {
   }
 };
 
+
 exports.submitQuiz = async (req, res) => {
-  const { answers } = req.body;
-  const user = req.user;
+  const { answers } = req.body; // Extract answers from the request body
+  const user = req.user; // Get the user from the request
 
   try {
     // Find all quizzes that contain questions with the given IDs
@@ -30,7 +31,7 @@ exports.submitQuiz = async (req, res) => {
     }
 
     let totalScore = 0;
-    const answeredQuestionIds = new Set(user.answeredQuestions.map(aq => aq.questionId.toString()));
+    const answeredQuestionIds = new Set(user.answeredQuestions.map(aq => aq.questionId.toString())); // Set of already answered question IDs
 
     // Create a map to store the highest scores for each category and level
     const scoreMap = new Map();
@@ -44,11 +45,11 @@ exports.submitQuiz = async (req, res) => {
       quizzes.forEach(quiz => {
         const question = quiz.questions.find(q => q.options.some(o => o._id.toString() === answer.id));
         if (question && question.answerId.toString() === answer.id) {
-          totalScore++;
+          totalScore++; // Increment total score for correct answer
           
           const key = `${quiz.category}-${quiz.level}`;
           const currentScore = scoreMap.get(key) || 0;
-          scoreMap.set(key, currentScore + 1);
+          scoreMap.set(key, currentScore + 1); // Update the score for the category and level
 
           answeredQuestionIds.add(answer.id); // Add the question ID to the set
           user.answeredQuestions.push({
@@ -65,21 +66,22 @@ exports.submitQuiz = async (req, res) => {
       const [category, level] = key.split('-');
       const existingScore = user.scores.find(s => s.category === category && s.level === level);
       if (existingScore) {
-        existingScore.score = Math.max(existingScore.score, score);
+        existingScore.score = Math.max(existingScore.score, score); // Ensure we keep the highest score
       } else {
-        user.scores.push({ category, level, score });
+        user.scores.push({ category, level, score }); // Add new score entry if it doesn't exist
       }
     });
 
-    user.totalScore = (user.totalScore || 0) + totalScore;
+    user.totalScore = (user.totalScore || 0) + totalScore; // Update total score
 
-    await user.save();
-    res.json({ score: totalScore });
+    await user.save(); // Save user data
+    res.json({ currentQuizScore: totalScore, grandTotalScore: user.totalScore }); // Respond with the total score for the current quiz submission and the grand total score
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).send('Server error'); // Handle server error
   }
 };
+
 
 
 
