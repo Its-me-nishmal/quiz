@@ -69,7 +69,7 @@ exports.loginUser = [
       }
 
       const payload = { user: { id: user.id } };
-      jwt.sign(payload, keys.jwtSecret, { expiresIn: '1h' }, (err, token) => {
+      jwt.sign(payload, keys.jwtSecret, { expiresIn: '30d' }, (err, token) => {
         if (err) throw err;
         res.json({ token });
       });
